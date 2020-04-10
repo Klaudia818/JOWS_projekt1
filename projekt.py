@@ -59,12 +59,11 @@ def topology():
 
     #Konfiguracja portu ingressowego dla AP
     ap1.cmd("modprobe ifb")
-    ap1.cmd("ip link set dev ifb0 down")
     ap1.cmd("ip link set dev ifb0 up")
     ap1.cmd("tc qdisc add dev ifb0 root handle 1: htb default 10")
     ap1.cmd("tc qdisc add dev ap1-eth2 ingress handle ffff:")
     ap1.cmd("tc class add dev ifb0 parent 1: classid 1:1 htb rate 250kbps ceil 250kbps")
-    ap1.cmd("tc class add dev ifb0 parent 1:1 classid 1:1 htb rate 180kbps ceil 250kbps")
+    ap1.cmd("tc class add dev ifb0 parent 1:1 classid 1:11 htb rate 180kbps ceil 250kbps")
     ap1.cmd("tc filter add dev ap1-eth2 protocol ip parent 1:0 prio 1 u32 match ip src 10.0.0.1 match ip dport 8080 0xffff flowid 1:11")
  
     ap1.cmd("tc filter add dev ap1-eth2 parent ffff: protocol ip u32 match u32 0 0 action connmark action mirred egress redirect dev ifb0 flowid ffff:1")
